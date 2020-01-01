@@ -86,7 +86,7 @@ def parse_location(content, title):
     resp = requests.get(LOCATION_QUERY_API % (location, MAPS_API_KEY))
     try:
         return resp.json()["resourceSets"][0]["resources"][0]["point"]["coordinates"]
-    except IndexError:
+    except json.decoder.JSONDecodeError:
         # Sometimes we can't parse out a location for a post. Skip it if so
         print("Failed to retrieve coordinates for %s, setting to 0,0" % title)
         return [0, 0]
