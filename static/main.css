@@ -1,0 +1,9 @@
+html, body {
+    background: #000;
+    color: #EEE;
+    text-align: center;
+}
+
+#map {
+    height: 600px;
+}
