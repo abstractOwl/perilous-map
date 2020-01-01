@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse
 from flask import Flask, render_template
 
-EVENTS_CACHE_KEY = 'events'
+EVENTS_CACHE_KEY = 'EVENTS'
+LOCATION_CACHE_PREFIX = 'LOCATION-'
 PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s'
 LOCATION_QUERY_API = 'http://dev.virtualearth.net/REST/v1/Locations/%s?maxResults=1&key=%s'
 RESULTS_PER_PAGE = 100
@@ -83,10 +84,16 @@ def parse_location(content, title):
     location = re.sub(r'<.*?>', '', location)
     location = location.replace('&#8217;', '\'').replace(u'\xa0', u' ')
 
+    if LOCATION_CACHE_PREFIX + location in cache:
+        return cache[LOCATION_CACHE_PREFIX + location]
+    cache[LOCATION_CACHE_PREFIX + location ]= query_location(location, title)
+    return cache[LOCATION_CACHE_PREFIX + location]
+
+def query_location(location, title):
     resp = requests.get(LOCATION_QUERY_API % (location, MAPS_API_KEY))
     try:
         return resp.json()["resourceSets"][0]["resources"][0]["point"]["coordinates"]
-    except json.decoder.JSONDecodeError:
+    except (json.decoder.JSONDecodeError, IndexError):
         # Sometimes we can't parse out a location for a post. Skip it if so
         print("Failed to retrieve coordinates for %s, setting to 0,0" % title)
         return [0, 0]
