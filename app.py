@@ -17,18 +17,14 @@ MAPS_API_KEY = os.environ["MAPS_API_KEY"]
 app = Flask(__name__, static_url_path='/static')
 cache = dict()
 
-@app.before_first_request
-def initialize():
-    # It's probably not worth optimizing this too much, given Heroku will
-    # put the instance to sleep after 30 min
-    cache[EVENTS_CACHE_KEY] = get_events()
-
 @app.route('/')
 def home_route():
     return render_template('index.html', maps_api_key=MAPS_API_KEY)
 
 @app.route('/events')
 def events_route():
+    # It's probably not worth optimizing this too much, given Heroku will
+    # put the instance to sleep after 30 min
     if EVENTS_CACHE_KEY in cache:
         return cache[EVENTS_CACHE_KEY]
     cache[EVENTS_CACHE_KEY] = get_events()
