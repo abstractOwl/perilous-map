@@ -25,7 +25,8 @@ def home_route():
 @app.route('/events')
 def events_route():
     # It's probably not worth optimizing this too much, given Heroku will
-    # put the instance to sleep after 30 min
+    # put the instance to sleep after 30 min. Obviously this would be much
+    # better as a background task but that's a hassle to set up in Heroku.
     if EVENTS_CACHE_KEY in cache:
         return cache[EVENTS_CACHE_KEY]
     cache[EVENTS_CACHE_KEY] = get_events()
