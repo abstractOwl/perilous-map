@@ -12,16 +12,16 @@
 <body>
     <div class="my-2" id="head">
         <h1>Mapping Prisoner Unrest</h1>
-        <span>data from <a class="text-warning" href="https://perilouschronicle.com">Perilous Chronicle</a></span>
+        <span>using data from <a class="text-warning" href="https://perilouschronicle.com">Perilous Chronicle</a></span>
     </div>
 
     <div class="my-3" id="controls">
-        <button class="btn btn-outline-warning" id="begin">&lt;&lt;</button>
-        <button class="btn btn-outline-warning" id="prev">&lt;</button>
+        <button role="button" aria-label="Back to first month" class="btn btn-outline-warning" id="begin">&lt;&lt;</button>
+        <button role="button" aria-label="Previous month" class="btn btn-outline-warning" id="prev">&lt;</button>
         <span class="mx-3" id="month">Loading...</span>
-        <button class="btn btn-outline-warning" id="play">Play</button>
-        <button class="btn btn-outline-warning" id="next">&gt;</button>
-        <button class="btn btn-outline-warning" id="last">&gt;&gt;</button>
+        <button role="button" aria-label="Start playing through months" class="btn btn-outline-warning" id="play">Play</button>
+        <button role="button" aria-label="Next month" class="btn btn-outline-warning" id="next">&gt;</button>
+        <button role="button" aria-label="Last month" class="btn btn-outline-warning" id="last">&gt;&gt;</button>
     </div>
     <div id="map">
     </div>
