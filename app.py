@@ -67,8 +67,8 @@ def get_posts():
     return posts
 
 def get_myears_without_events(events_by_myear, posts):
-    first_month = datetime.strptime(events_by_myear[-1]['myear'], '%Y%m')
-    last_month = datetime.strptime(events_by_myear[0]['myear'], '%Y%m')
+    first_month = datetime.strptime(events_by_myear[0]['myear'], '%Y%m')
+    last_month = datetime.strptime(events_by_myear[-1]['myear'], '%Y%m')
     all_months = list(set(
         (first_month + timedelta(_)).strftime('%Y%m')
         for _ in range((last_month - first_month).days)
