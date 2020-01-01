@@ -1,1 +1,1 @@
-web: FLASK_APP=app.py flask run --port=$PORT
+web: FLASK_APP=app.py flask run --port=$PORT --host=0.0.0.0
