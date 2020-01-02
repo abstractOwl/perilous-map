@@ -6,7 +6,7 @@ import requests
 
 from datetime import datetime, timedelta
 from dateutil.parser import parse
-from flask import Flask, render_template
+from flask import Flask, render_template, Response
 
 EVENTS_CACHE_KEY = 'EVENTS'
 LOCATION_CACHE_PREFIX = 'LOCATION-'
@@ -31,11 +31,10 @@ def events_route():
     # It's probably not worth optimizing this too much, given Heroku will
     # put the instance to sleep after 30 min. Obviously this would be much
     # better as a background task but that's a hassle to set up in Heroku.
-    print('Loading events...')
-    if EVENTS_CACHE_KEY in cache:
-        return cache[EVENTS_CACHE_KEY]
-    cache[EVENTS_CACHE_KEY] = get_events()
-    return cache[EVENTS_CACHE_KEY]
+    if not(EVENTS_CACHE_KEY in cache):
+        cache[EVENTS_CACHE_KEY] = get_events()
+
+    return Response(cache[EVENTS_CACHE_KEY], mimetype="application/json")
 
 def get_events():
     sort_by_myear = lambda post: post['myear']
