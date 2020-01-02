@@ -7,9 +7,8 @@ import requests
 from datetime import datetime, timedelta
 from dateutil.parser import parse
 from flask import Flask, render_template, Response
+from functools import lru_cache
 
-EVENTS_CACHE_KEY = 'EVENTS'
-LOCATION_CACHE_PREFIX = 'LOCATION-'
 PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s'
 LOCATION_QUERY_API = 'http://dev.virtualearth.net/REST/v1/Locations/%s?maxResults=1&key=%s'
 RESULTS_PER_PAGE = 100
@@ -31,11 +30,16 @@ def events_route():
     # It's probably not worth optimizing this too much, given Heroku will
     # put the instance to sleep after 30 min. Obviously this would be much
     # better as a background task but that's a hassle to set up in Heroku.
-    if not(EVENTS_CACHE_KEY in cache):
-        cache[EVENTS_CACHE_KEY] = get_events()
+    return Response(get_events(), mimetype="application/json")
 
-    return Response(cache[EVENTS_CACHE_KEY], mimetype="application/json")
+@app.route('/cache_info')
+def cache_info():
+    return Response(json.dumps({
+        'events': get_events.cache_info(),
+        'locations': query_location.cache_info()
+    }), mimetype="application/json")
 
+@lru_cache(maxsize=1)
 def get_events():
     sort_by_myear = lambda post: post['myear']
 
@@ -61,7 +65,7 @@ def get_posts():
         for obj in resp.json():
             posts.append({
                 'date': obj['date'],
-                'location': parse_location(obj['content']['rendered'], obj['title']),
+                'location': parse_location(obj['content']['rendered'], obj['title']['rendered']),
                 'link': obj['link'],
                 'myear': parse(obj['date']).strftime('%Y%m'),
                 'title': obj['title']['rendered']
@@ -88,12 +92,9 @@ def parse_location(content, title):
     location = re.findall(r'^(?:<p.*?>)?(.*?)<(?:br|/p)', body)[0]
     location = re.sub(r'<.*?>', '', location)
     location = location.replace('&#8217;', '\'').replace(u'\xa0', u' ')
+    return query_location(location, title)
 
-    if LOCATION_CACHE_PREFIX + location in cache:
-        return cache[LOCATION_CACHE_PREFIX + location]
-    cache[LOCATION_CACHE_PREFIX + location ]= query_location(location, title)
-    return cache[LOCATION_CACHE_PREFIX + location]
-
+@lru_cache(maxsize=500)
 def query_location(location, title):
     resp = requests.get(LOCATION_QUERY_API % (location, MAPS_API_KEY))
     try:
