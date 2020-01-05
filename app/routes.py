@@ -146,5 +146,5 @@ def query_location(location, title):
         return resp.json()["resourceSets"][0]["resources"][0]["point"]["coordinates"]
     except (json.decoder.JSONDecodeError, IndexError):
         # Sometimes we can't parse out a location for a post. Skip it if so
-        print("Failed to retrieve coordinates for %s, parsed as [%s]. Setting to 0,0" % (title, location))
+        print("Failed to retrieve coordinates for %s. Setting to 0,0" % title)
         return [0, 0]
