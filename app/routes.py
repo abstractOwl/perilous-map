@@ -14,7 +14,7 @@ from app import app
 
 LOCATION_QUERY_API = 'http://dev.virtualearth.net/REST/v1/Locations/%s?maxResults=1&key=%s'
 PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s&tags=%s'
-COVID_TAG_ID=601
+COVID_TAG_ID = 601
 
 MAPS_API_KEY = os.environ["MAPS_API_KEY"]
 RESULTS_PER_PAGE = 100

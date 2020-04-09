@@ -49,7 +49,7 @@ function playSlides() {
         nextSlide();
         timer = setTimeout(function () {
             playSlides();
-        }, 2500);
+        }, 750);
     }
 }
 
