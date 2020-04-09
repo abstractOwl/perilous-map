@@ -125,11 +125,28 @@ def parse_location(content, title):
     body = content.replace('\n', '')
     body = re.sub(r'(?:<p>)?<!-- /?wp:paragraph -->(?:</p>)?', '', body)
     body = re.sub(r'(?:<p>)?<!-- /?wp:image .*?-->(?:</p>)?', '', body)
-    location = re.findall(r'^(?:<p.*?>)?(.*?)<(?:br|/p)', body)[0]
+
+    # Some posts are formatted slightly differently
+    try:
+        location = re.findall(r'^(?:<p.*?>)?(.*?)<(?:br|/p)', body)[0]
+    except IndexError:
+        location = re.findall(r'^\r*(.*?)\r', body)[0]
+
+    # Heuristic to see if parsed location is bad; if so, try parsing title
+    if location.count(' ') > 10:
+        location = title
+        location = re.sub(r'^.*? at ', '', location)
+        location = re.sub(r'^.*? to ', '', location)
+        print("Parsed title [%s] to [%s]." % (title, location))
+
     location = re.sub(r'<.*?>', '', location)
     location = location.replace('&#8217;', '\'')
     location = location.replace(u'\xa0', u' ')
     location = location.replace('&#8211', '–')
+
+    # Special case for National Prison Strike posts
+    location = re.sub(r'\d+ National Prison Strike: ', '', location)
+
     return query_location(location, title)
 
 
