@@ -13,20 +13,22 @@ import requests
 from app import app
 
 LOCATION_QUERY_API = 'http://dev.virtualearth.net/REST/v1/Locations/%s?maxResults=1&key=%s'
-PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s'
+PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s&tags=%s'
+COVID_TAG_ID=601
 
 MAPS_API_KEY = os.environ["MAPS_API_KEY"]
 RESULTS_PER_PAGE = 100
 SESSION = requests.Session()
 
-@app.before_first_request
-def initialize():
-    events_route()
-
 
 @app.route('/')
 def home_route():
     return render_template('index.html', maps_api_key=MAPS_API_KEY)
+
+
+@app.route('/covid')
+def covid_route():
+    return render_template('covid.html', maps_api_key=MAPS_API_KEY)
 
 
 @app.route('/events')
@@ -35,6 +37,11 @@ def events_route():
     # put the instance to sleep after 30 min. Obviously this would be much
     # better as a background task but that's a hassle to set up in Heroku.
     return Response(get_events(get_ttl_hash(60 * 60 * 24)), mimetype="application/json")
+
+
+@app.route('/covid_events')
+def covid_events_route():
+    return Response(get_all_covid_events(get_ttl_hash(60 * 15)), mimetype="application/json")
 
 
 @lru_cache(maxsize=1)
@@ -58,6 +65,17 @@ def get_events(ttl_hash):
     return json.dumps(result)
 
 
+@lru_cache(maxsize=1)
+def get_all_covid_events(ttl_hash):
+    """
+    Retrieves the events grouped by month-year.
+    :param ttl_hash: A hash from get_ttl_hash() to evict the cached events
+    :return: A list of dicts for each month-year in the time range,
+             each containing a list of events in that month-year
+    """
+    return json.dumps(get_posts(COVID_TAG_ID))
+
+
 def get_ttl_hash(seconds):
     """
     Computes a different hash every `seconds`. Changing the function parameter
@@ -71,7 +89,7 @@ def get_post_myear(post):
     return post['myear']
 
 
-def get_posts():
+def get_posts(tags=''):
     """
     Returns the list of WordPress posts from the Perilous Chronicle site.
     :return: A list of dicts containing the keys date, location, link, myear, and title
@@ -79,7 +97,7 @@ def get_posts():
     page = 1
     posts = []
     while True:
-        resp = SESSION.get(PC_URL % (RESULTS_PER_PAGE, page))
+        resp = SESSION.get(PC_URL % (RESULTS_PER_PAGE, page, tags))
         if resp.status_code != 200:
             break
 
@@ -89,7 +107,8 @@ def get_posts():
                 'location': parse_location(obj['content']['rendered'], obj['title']['rendered']),
                 'link': obj['link'],
                 'myear': parse(obj['date']).strftime('%Y%m'),
-                'title': obj['title']['rendered']
+                'title': obj['title']['rendered'],
+                'is_covid': COVID_TAG_ID in obj['tags']
             })
 
         page += 1

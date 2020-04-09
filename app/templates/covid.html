@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>The Prison COVID-19 Crisis</title>
+    <meta charset="utf-8">
+    <meta property="og:image" content="{{url_for('static', filename='screenshot.png')}}">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key={{maps_api_key}}'></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <div class="my-2 mb-4" id="head">
+        <h1>The Prison COVID-19 Crisis</h1>
+        <span>
+            using data from
+            <a class="text-danger" href="https://perilouschronicle.com">
+                Perilous Chronicle
+            </a>
+            (<a class="text-danger" href="/">Main map</a>)
+        </span>
+    </div>
+
+    <div id="map">
+    </div>
+
+    <script src="{{url_for('static', filename='covid_app.js')}}"></script>
+</body>
+</html>
