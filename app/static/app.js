@@ -64,36 +64,18 @@ function pause() {
 function render() {
     $('#month').text(myearToString(eventData[slide].myear));
 
-    for (var i = pinLayer.getPrimitives().length - 1; i >= 0; i--) {
-        var pushpin = pinLayer.getPrimitives()[i];
-        if (pushpin instanceof Microsoft.Maps.Pushpin) {
-            Microsoft.Maps.Events.removeHandler(pushpin);
-            pinLayer.removeAt(i);
-        }
-    }
+    pinLayer.clearLayers();
 
     var events = eventData[slide].events;
     for (var i = 0; i < events.length; i++) {
         var coords = events[i].location;
-        var pos = new Microsoft.Maps.Location(coords[0], coords[1]);
-        var pushpin = new Microsoft.Maps.Pushpin(pos, {
-            color: events[i].is_covid ? 'red' : 'orange',
-            enableHoverStyle: true
-        });
-        pushpin.metadata = {
-            title: events[i].title,
-            description: '<a href="' + events[i].link + '" target="_blank">Link</a>'
-        };
-        pinLayer.add(pushpin);
-
-        Microsoft.Maps.Events.addHandler(pushpin, 'click', function (args) {
-            infobox.setOptions({
-                location: args.target.getLocation(),
-                title: args.target.metadata.title,
-                description: args.target.metadata.description,
-                visible: true
-            });
-        });
+        var pushpin = L.marker([coords[0], coords[1]])
+            .bindPopup(
+                '<b>' + events[i].title + '</b><br />' +
+                '<a href="' + events[i].link + '" target="_blank">Link</a>'
+            )
+            .addTo(map);
+        pinLayer.addLayer(pushpin);
     }
 }
 
@@ -105,16 +87,16 @@ function myearToString(myear) {
 }
 
 document.body.onload = function () {
-    map = new Microsoft.Maps.Map(document.getElementById('map'), {
-        center: new Microsoft.Maps.Location(39.833333, -98.583333),
-        zoom: 4
-    });
+    map = L.map('map').setView({lat: 39.833333, lon: -98.583333}, 4);
 
-    pinLayer = new Microsoft.Maps.Layer();
-    map.layers.insert(pinLayer);
+    // add the OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+    }).addTo(map);
 
-    infobox = new Microsoft.Maps.Infobox(null, { visible: false });
-    infobox.setMap(map);
+    pinLayer = L.layerGroup();
+    pinLayer.addTo(map);
 
     $('#play').click(play);
     $('#begin').click(firstSlide);
