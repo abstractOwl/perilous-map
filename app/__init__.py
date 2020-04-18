@@ -186,4 +186,7 @@ app = Flask(__name__, static_url_path='/static')
 
 from app import routes
 
-refresh_events()
+# Only initialize Redis if not already initialized
+if redis_client.get('events:all') is None \
+        or redis_client.get('events:covid') is None:
+    refresh_events()
