@@ -6,4 +6,4 @@ Chronicle](https://www.perilouschronicle.com). See the map
 
 [What is prison abolition?](https://www.teenvogue.com/story/what-is-prison-abolition-movement)
 
-![Screenshot of the map](app/static/screenshot.png)
+![Screenshot of the map](perilous_map/static/screenshot.png)

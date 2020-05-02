@@ -184,7 +184,7 @@ SCHED.start()
 
 app = Flask(__name__, static_url_path='/static')
 
-from app import routes
+from perilous_map import routes
 
 # Only initialize Redis if not already initialized
 if redis_client.get('events:all') is None \

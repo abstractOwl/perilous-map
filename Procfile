@@ -1,1 +1,1 @@
-web: gunicorn app:app -t 600
+web: gunicorn perilous_map:app -t 600

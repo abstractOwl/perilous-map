@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from flask import render_template, Response
 import redis
 
-from app import app
+from perilous_map import app
 
 
 MAPS_API_KEY = os.environ["MAPS_API_KEY"]
