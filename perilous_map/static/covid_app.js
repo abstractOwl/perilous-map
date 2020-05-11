@@ -12,9 +12,14 @@ function render(events) {
             enableHoverStyle: true
         });
         pushpin.metadata = {
-            title: events[i].title,
-            description: '<a href="' + events[i].link + '" target="_blank">Link</a>'
+            title: events[i].title + ' (' + events[i].date +  ')'
         };
+        if (events[i].link !== 'n/a') {
+            pushpin.metadata.description =
+                '<a href="' + events[i].link + '" target="_blank">Link</a>'
+        } else {
+            pushpin.metadata.description = "No writeup available yet"
+        }
         pinLayer.add(pushpin);
 
         Microsoft.Maps.Events.addHandler(pushpin, 'click', function (args) {

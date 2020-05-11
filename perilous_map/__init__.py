@@ -1,3 +1,4 @@
+import csv
 import itertools
 import json
 import os
@@ -41,15 +42,6 @@ def get_events():
     result = sorted(events_by_myear + empty_months, key=get_post_myear)
 
     return json.dumps(result)
-
-
-def get_all_covid_events():
-    """
-    Retrieves the events grouped by month-year.
-    :return: A list of dicts for each month-year in the time range,
-             each containing a list of events in that month-year
-    """
-    return json.dumps(get_posts(COVID_TAG_ID))
 
 
 def get_post_myear(post):
@@ -166,6 +158,31 @@ def lookup_location(location, title):
         # Sometimes we can't parse out a location for a post. Skip it if so
         print("Failed to retrieve coordinates for %s. Setting to 0,0" % title)
         return [0, 0]
+
+
+#--------------#
+# COVID-19 events #
+#--------------#
+COVID_SHEETS_URL = "https://docs.google.com/spreadsheets/d/%s/export?exportFormat=csv"
+COVID_SHEETS_KEY = "1BldsL3FTTx3h65v7tme9i4AENDQAeqYREGqUM3gtPwo"
+def get_all_covid_events():
+    """
+    Retrieves COVID-19 related events pulled from the spreadsheet maintained by
+    Perilous Chronicle.
+    :return: A list of events
+    """
+    r = requests.get(COVID_SHEETS_URL % COVID_SHEETS_KEY)
+    reader = csv.DictReader(r.text.splitlines())
+
+    # TODO: Currently events in the same lat/lng overlap completely. In the
+    # future, de-dupe them and append the events to the same pin.
+    return json.dumps([{
+        'date': row['date'],
+        'location': [row['Latitude'], row['Longitude']],
+        'link': row['URL to the full Perilous post'],
+        'title': row['Title of event'],
+        'is_covid': True
+    } for row in reader if row['date']])
 
 
 def refresh_events():
