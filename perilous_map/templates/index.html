@@ -3,6 +3,7 @@
 <head>
     <title>Mapping Prisoner Unrest</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=0.8">
     <meta property="og:image" content="https://perilous-map.herokuapp.com{{url_for('static', filename='screenshot.png')}}">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -10,7 +11,7 @@
     <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key={{maps_api_key}}'></script>
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 </head>
-<body>
+<body class="d-flex flex-column">
     <div class="my-2" id="head">
         <h1>Mapping Prisoner Unrest</h1>
         <span>
@@ -30,7 +31,8 @@
         <button role="button" aria-label="Next month" class="btn btn-outline-warning" id="next">&gt;</button>
         <button role="button" aria-label="Last month" class="btn btn-outline-warning" id="last">&gt;&gt;</button>
     </div>
-    <div id="map">
+
+    <div id="map" class="flex-grow-1">
     </div>
 
     <script src="{{url_for('static', filename='app.js')}}"></script>
