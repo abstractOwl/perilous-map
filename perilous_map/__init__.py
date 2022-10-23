@@ -15,7 +15,7 @@ import requests
 
 
 LOCATION_QUERY_API = 'http://dev.virtualearth.net/REST/v1/Locations/%s?maxResults=1&key=%s'
-PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s&tags=%s'
+PC_URL = 'https://perilouschronicle.com/wp-json/wp/v2/posts?per_page=%s&page=%s'
 COVID_TAG_ID = 601
 
 MAPS_API_KEY = os.environ["MAPS_API_KEY"]
@@ -56,7 +56,11 @@ def get_posts(tags=''):
     page = 1
     posts = []
     while True:
-        resp = SESSION.get(PC_URL % (RESULTS_PER_PAGE, page, tags))
+        url = PC_URL % (RESULTS_PER_PAGE, page)
+        if tags:
+            url += "&tags=%s" % tags
+
+        resp = SESSION.get(url)
         if resp.status_code != 200:
             break
 
